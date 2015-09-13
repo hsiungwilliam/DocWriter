@@ -1,0 +1,190 @@
+<!doctype html>
+<html ng-app="DocWriter">
+<title>DocWriter</title>
+<head>
+<meta charset="utf-8" />
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="style.css" />
+    <script data-require="angular.js@1.4.x" src="https://code.angularjs.org/1.4.1/angular.js" data-semver="1.4.1"></script>
+    <script src="app.js"></script>
+    <script src="ui-bootstrap-tpls-0.13.3.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-animate.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tab icon -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/img/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/img/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/img/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/img/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/img/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/img/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/img/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/img/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="/img/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/img/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+	<link rel="manifest" href="/img/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/img/ms-icon-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+    
+</head>
+<body class="well" id="background">
+<form>
+<div ng-controller="MainCtrl">
+	<h1 ng-cloak>Welcome to DocWriter, {{ name }} <h1>
+		<h2 id="apptnote" ng-cloak>Appointment Note for: {{ patient_name }}</h2>
+
+		<div my-directive></div>
+	
+
+
+			<!-- Text box goes aqui -->
+	<textarea ng-model="note" ng-model-options="{ debounce: 1000 }" class="wideinput" id="note" placeholder="Appointment Information goes here">
+	</textarea>
+
+	<!-- First degree category -->
+	<div ng-repeat="cat in templates" ng-show="!showTemplateForm">
+		<button type="button" class="btn btn-large btn-primary" id="category" ng-click="openCategory($index)" ng-show="thisindex == -1 || thisindex == $index" ng-cloak>
+			{{ cat.category }}
+		</button>
+
+		<!-- Second degree category -->
+		<div ng-show="thisindex == $index" >
+			<img src="img/glyphicons-218-circle-arrow-right.png" alt="Right Arrow" style="width:20px;height:20px;" ng-cloak></img>
+			<div id="subcategory" ng-repeat="subcat in cat.subcategories">
+				<button type="button" class="btn btn-warning" ng-click="openSubCategory($index)" ng-show="thissubindex == -1 || thissubindex == $index" ng-cloak>
+					{{ subcat.subcategory }}
+				</button>
+
+				<!-- Third degree category -->
+				<div ng-show="thissubindex == $index" >
+					<img src="img/glyphicons-218-circle-arrow-right.png" alt="Right Arrow" style="width:20px;height:20px;" id="secondarrow" ng-cloak></img>
+					<div class="ssc">
+						<div class="subsubcategory" ng-repeat="subsubcat in subcat.subsubcategories">
+							<!--templates[thisindex].subcategories[thissubindex].subsubcategories[$index].subsubcategory-->
+							<button type="button" class="btn btn-success" ng-click="openTemplateForm(); " ng-cloak>
+								{{ subsubcat.subsubcategory }}
+							</button>
+
+						</div>
+					</div>
+
+
+
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<div ng-show="showTemplateForm">
+		
+		<form name="addition">
+        <div class="modal-header">
+            <h3 class="modal-title" ng-cloak>Template for {{ title }}</h3>
+            <button class="btn btn-default editbutton edit" type="button" ng-show="!showTemplateFormWithin" ng-click="openTemplateFormWithin()" ng-cloak>Edit</button>
+            <button id="saved" class="btn btn-primary editbutton" type="button" ng-show="showTemplateFormWithin" ng-click="closeTemplateFormWithin()" ng-cloak>Save</button>
+        </div>
+        <div class="modal-body">
+       
+
+		<div id="thistemplate" ng-show='!showTemplateFormWithin'></div> 
+            <!--<textarea id="edit" class="wideInput templatedisplayed" name="addition" ng-model="template" ng-show="!showTemplateFormWithin" readonly></textarea>-->
+            <textarea class="wideInput templatedisplayed" name="addition" ng-model="template" ng-show="showTemplateFormWithin" ng-cloak></textarea>
+            
+        
+    
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" type="submit" name="addition" ng-click="addToNote()" ng-show="!showTemplateFormWithin" ng-cloak>Add</button>
+            <button class="btn btn-warning cancel" type="button" ng-click="closeTemplateForm()" ng-show="!showTemplateFormWithin" ng-cloak>Cancel</button>
+        </div>
+        </form> 
+	</div>
+
+	<br>
+	<div class="btn btn-large btn-primary bottonbtnadd">
+		Add Template
+	</div>
+	<div class="btn btn-large btn-primary bottonbtnedit">
+		Edit Template
+	</div>
+	<div class="btn btn-large btn-primary bottonbtnname" ng-click="open()">
+		Change Patient Name
+	</div>
+
+	<!-- Modal stuffs -->
+
+	<div ng-init="open()">
+	<script type="text/ng-template" id="myModalContent.html">
+        <form name="patient">
+        <div class="modal-header">
+            <h3 class="modal-title">Patient Name</h3>
+        </div>
+        <div class="modal-body">
+            
+            <input class="" type="text" name="patient" ng-model="patient_name" placeholder="Last Name, First Name" autofocus="autofocus" ></input>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="submit" name="patient" ng-click="ok()">OK</button>
+            <button class="btn btn-warning btncancel" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+        </form>
+    </script>
+
+    <div class="btn btn-success" ng-click="update(note)" id="save">
+    	Save
+    </div>
+
+
+	<a download="{{ patient_name }}.txt" ng-href="{{ url }}" ng-show="saved">
+	<div type="submit" class="btn btn-success" ng-click="display(); addAlert(); open()" id="done">
+		Done
+	</div>	
+	</a>
+	</div>
+
+	<!-- Using a template modal -->
+	<script type="text/ng-template" id="myTemplateContent.html" >
+	
+        <form name="addition">
+        <div class="modal-header">
+            <h3 class="modal-title" ng-cloak>Template for {{ title }}</h3>
+        </div>
+        <div class="modal-body">
+       
+
+		<div id="thistemplate"></div> 
+            <textarea id="edit" class="wideInput templatedisplayed" name="addition" ng-model="template" ng-show="!showTemplateForm" readonly></textarea>
+            <textarea id="saved" class="wideInput templatedisplayed" name="addition" ng-model="template" ng-show="showTemplateForm" ></textarea>
+            
+            <button class="btn btn-default editbutton" type="button" ng-show="!showTemplateForm" ng-click="openTemplateForm()">Edit</button>
+            <button class="btn btn-primary editbutton" type="button" ng-show="showTemplateForm" ng-click="closeTemplateForm()">Save</button>
+    
+        </div>
+        <div class="modal-footer">
+        	<button class="btn btn-success" type="submit" name="addition" ng-click="openTemplate()">Refresh</button>
+            <button class="btn btn-success" type="submit" name="addition" ng-click="ok()">Add</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+        </form> 
+    </script>
+
+	<!-- Alert for when a new file has been create -->
+	<alert ng-repeat="alert in alerts" type="success" close="closeAlert($index)">{{alert.msg}}</alert>
+
+</div>
+
+</form>
+
+
+</body>
+</html>
